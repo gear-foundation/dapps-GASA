@@ -1,17 +1,17 @@
-import { useEffect, useState } from "react";
-import { RocketRace } from "../components/common/rocket-race";
+import { useEffect, useState } from 'react';
+import { RocketRace } from '../components/common/rocket-race';
 import { useLounch } from 'app/context';
 import { WEATHER } from 'app/consts';
 
-import { Loader } from 'components/loaders/loader'
-import { EventData, ParticipantDataType, SessionStatus } from "../app/types/battles";
+import { Loader } from 'components/loaders/loader';
+import { EventData, ParticipantDataType, SessionStatus } from '../app/types/battles';
 
 export interface RacePosition {
   id: string;
   xoffset: number; //default 5
   bgColor: string;
-  fuel: number | null;
-  payload: number | null;
+  fuel: string | null;
+  payload: string | null;
   eventEmoji?: null | string;
   alive: boolean;
 }
@@ -19,12 +19,10 @@ export interface RacePosition {
 export const Launch = () => {
   const { launch } = useLounch();
 
-  console.log(launch)
-
-  const [readLogs, setReadLogs] = useState<{ sessionNum: number, event: EventData }[]>([])
-  const [statusSessionRace, setStatusSessionRace] = useState<SessionStatus>(SessionStatus.INIT)
-  const [state, setState] = useState<RacePosition[]>([])
-  const [logs, setLogs] = useState<{ sessionNum: number, events: EventData[] }[]>([])
+  const [readLogs, setReadLogs] = useState<{ sessionNum: number; event: EventData }[]>([]);
+  const [statusSessionRace, setStatusSessionRace] = useState<SessionStatus>(SessionStatus.INIT);
+  const [state, setState] = useState<RacePosition[]>([]);
+  const [logs, setLogs] = useState<{ sessionNum: number; events: EventData[] }[]>([]);
   const [count, setCount] = useState(0);
 
   const currentSessionRegisteredKeys = launch && Object.keys(launch.currentSession!.registered);
@@ -37,37 +35,38 @@ export const Launch = () => {
         // @ts-ignore
         const { fuel, payload } = launch!.currentSession!.registered[key] as ParticipantDataType;
 
-        const register: RacePosition = { id: key, bgColor: '#ADB2AF', fuel, payload, xoffset: 5, alive: true }
+        const register: RacePosition = { id: key, bgColor: '#ADB2AF', fuel, payload, xoffset: 5, alive: true };
 
-        updateState.push(register)
+        updateState.push(register);
       }
 
       // setState(prevState => [...prevState, register])
-      setState(updateState)
+      setState(updateState);
     }
 
     if (launch && launch.state === SessionStatus.REGISTRATION) {
-      setStatusSessionRace(SessionStatus.REGISTRATION)
+      setStatusSessionRace(SessionStatus.REGISTRATION);
     }
 
     if (launch && launch.state === SessionStatus.SESSION_IS_OVER) {
-      const keysEvents = Object.keys(launch.events)
-      let state = []
+      const keysEvents = Object.keys(launch.events);
+      let state = [];
       //Логи
       for (const sessionKey of keysEvents) {
         // @ts-ignore
         const sessionEventData = launch.events[sessionKey];
-        const createSessionEventLogs = { sessionNum: Number(sessionKey), events: sessionEventData as EventData[] }
-        state.push(createSessionEventLogs)
+        const createSessionEventLogs = { sessionNum: Number(sessionKey), events: sessionEventData as EventData[] };
+        state.push(createSessionEventLogs);
       }
       // @ts-ignore
-      setLogs(state)
+      setLogs(state);
     }
-  }, [launch])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [launch]);
 
   useEffect(() => {
     let counter = count;
-    let interval: any
+    let interval: any;
 
     if (launch && launch.state === SessionStatus.SESSION_IS_OVER && logs.length >= 1) {
       interval = setInterval(() => {
@@ -81,18 +80,21 @@ export const Launch = () => {
           let raceSessionState = [];
 
           for (const event of dataLogs.events) {
-            setLogsList.push({ sessionNum: dataLogs.sessionNum, event })
+            setLogsList.push({ sessionNum: dataLogs.sessionNum, event });
             raceSessionState.push({
               xoffset: getOffsetBySession(dataLogs.sessionNum),
               id: event.participant,
               payload: event.payload,
               fuel: event.fuelLeft,
               alive: event.alive,
-            } as RacePosition)
+            } as RacePosition);
           }
-          setReadLogs([...readLogs, ...setLogsList])
-          let raceSessionStatewWithEmptyTemplate = [...raceSessionState, ...getEmptyTemplateByEventsLength(dataLogs.events.length)]
-          setState(raceSessionStatewWithEmptyTemplate)
+          setReadLogs([...readLogs, ...setLogsList]);
+          let raceSessionStatewWithEmptyTemplate = [
+            ...raceSessionState,
+            ...getEmptyTemplateByEventsLength(dataLogs.events.length),
+          ];
+          setState(raceSessionStatewWithEmptyTemplate);
 
           counter++;
         }
@@ -100,6 +102,7 @@ export const Launch = () => {
     }
 
     return () => clearInterval(interval);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [count, launch, logs]);
 
   return (
@@ -109,83 +112,97 @@ export const Launch = () => {
       ) : (
         <>
           <div className="w-full h-1/3 border-b-gray-900">
-            {state.map(rocket => RocketRace({ ...rocket, sessionStatus: statusSessionRace }))}
+            {state.map((rocket) => (
+              <RocketRace key={rocket.id} {...rocket} sessionStatus={statusSessionRace} />
+            ))}
           </div>
           <div className="flex flex-row w-full h-2/3 logs">
             <div className="w-9/12 flex flex-col overflow-auto border-2 p-1">
-              {readLogs.length >= 1 && readLogs.map(logs => {
-                return (<div>
-                  <div>
-                    <span className='arrow'>{'>'}</span>
-                    <span className='sessionId'>{`Session: ${logs.sessionNum}`}</span>
-                  </div>
-                  <div>
-                    <span className='arrow'>{'>'}</span>
-                    <span>Player: </span>
-                    <span className='player'>{`${logs.event.participant.slice(1, 5)}...${logs.event.participant.slice(-4)}`}</span>
-                  </div>
-                  <div>
-                    <span className='arrow'>{'>'}</span>
-                    {`Data: Alive: ${logs.event.alive}, Fuel left: ${logs.event.fuelLeft}, Last Altitude: ${logs.event.lastAltitude} Payload: ${logs.event.payload}, Halt: ${logs.event.halt}`}
-                  </div>
-                </div>)
-              })}
+              {readLogs.length >= 1 &&
+                readLogs.map((logs, index) => {
+                  return (
+                    <div key={index}>
+                      <div>
+                        <span className="arrow">{'>'}</span>
+                        <span className="sessionId">{`Session: ${logs.sessionNum}`}</span>
+                      </div>
+                      <div>
+                        <span className="arrow">{'>'}</span>
+                        <span>Player: </span>
+                        <span className="player">{`${logs.event.participant.slice(
+                          1,
+                          5,
+                        )}...${logs.event.participant.slice(-4)}`}</span>
+                      </div>
+                      <div>
+                        <span className="arrow">{'>'}</span>
+                        {`Data: Alive: ${logs.event.alive}, Fuel left: ${logs.event.fuelLeft}, Last Altitude: ${logs.event.lastAltitude} Payload: ${logs.event.payload}, Halt: ${logs.event.halt}`}
+                      </div>
+                    </div>
+                  );
+                })}
             </div>
             <div className="flex flex-col w-1/4 text-center">
               <div>
                 <div className="flex flex-row">
-                  <div className='border-2 w-3/6 p-1'>
+                  <div className="border-2 w-3/6 p-1">
                     <h1 style={{ color: 'green' }}>{'↓ register'}</h1>
                   </div>
-                  <div className='border-2 w-3/6 p-1'>
+                  <div className="border-2 w-3/6 p-1">
                     <h1 style={{ color: 'green' }}>fuel left</h1>
                   </div>
-                  <div className='border-2 w-3/6 p-1'>
+                  <div className="border-2 w-3/6 p-1">
                     <h1 style={{ color: 'green' }}>Payload</h1>
                   </div>
                 </div>
                 <div className="flex flex-col overflow-auto text-center border-b">
                   {state.map((race) => {
-                    return (<div className='flex flex-row' key={race.id}>
-                      <span className='w-3/6 p-1'>{`${race.id.slice(1, 3)}-${race.id.slice(-3)}`}</span>
-                      <span className='w-3/6 p-1'>{race.fuel}</span>
-                      <span className='w-3/6 p-1'>{race.payload}</span>
-                    </div>)
+                    return (
+                      <div className="flex flex-row" key={race.id}>
+                        <span className="w-3/6 p-1">{`${race.id.slice(1, 3)}-${race.id.slice(-3)}`}</span>
+                        <span className="w-3/6 p-1">{race.fuel}</span>
+                        <span className="w-3/6 p-1">{race.payload}</span>
+                      </div>
+                    );
                   })}
                 </div>
               </div>
-              <div className='flex flex-col '>
-                <div className='border-b'>{`weather`}</div>
-                <span className='text-xl'>{WEATHER[launch!.currentSession!.weather]}</span>
+              <div className="flex flex-col ">
+                <div className="border-b">{`weather`}</div>
+                <span className="text-xl">{WEATHER[+launch!.currentSession!.weather]}</span>
               </div>
             </div>
           </div>
         </>
       )}
-
-
-
     </div>
   );
 };
 
 function getOffsetBySession(session: number): number {
-  if (session === 0) return 10
-  if (session === 1) return 45
-  if (session === 2) return 85
+  if (session === 0) return 10;
+  if (session === 1) return 45;
+  if (session === 2) return 85;
 
-  return 10
+  return 10;
 }
 
 function getEmptyTemplateByEventsLength(eventsLength: number): RacePosition[] {
-  let res = []
-  const emptyTemplate: RacePosition = { id: '', fuel: 0, payload: 0, xoffset: 10, bgColor: '#7b0015', alive: false }
+  let res = [];
+  const emptyTemplate: RacePosition = {
+    id: '',
+    fuel: '0',
+    payload: '0',
+    xoffset: 10,
+    bgColor: '#7b0015',
+    alive: false,
+  };
   if (eventsLength === 2) {
-    res.push(...[emptyTemplate, emptyTemplate])
+    res.push(...[emptyTemplate, emptyTemplate]);
   }
   if (eventsLength === 3) {
-    res.push(...[emptyTemplate])
+    res.push(...[emptyTemplate]);
   }
 
-  return res
+  return res;
 }

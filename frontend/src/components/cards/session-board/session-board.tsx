@@ -1,18 +1,16 @@
 import styles from './board.module.scss';
 import clsx from 'clsx';
 import { useLounch } from 'app/context';
-import { WEATHER } from 'app/consts'
+import { WEATHER } from 'app/consts';
 
 export const SessionBoard = () => {
-
   const { launch } = useLounch();
-  console.log(launch)
+  console.log(launch);
 
   const players = Object.keys(launch!.currentSession!.registered).length;
-  console.log(players)
+  console.log(players);
 
   return (
-
     <div className={clsx('w-1/3', styles.board)}>
       <h2 className={styles.session}>Session #{launch?.sessionId}</h2>
       <div className="flex flex-col">
@@ -29,7 +27,7 @@ export const SessionBoard = () => {
             <span>Weather:</span>
           </div>
           <div className="m-1 grow">
-            <span>{WEATHER[launch!.currentSession!.weather]}</span>
+            <span>{WEATHER[+launch!.currentSession!.weather]}</span>
           </div>
         </div>
         <div className="flex flex-row">

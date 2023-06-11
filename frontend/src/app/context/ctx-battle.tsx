@@ -1,12 +1,11 @@
 import { createContext, Dispatch, ReactNode, SetStateAction, useState } from 'react';
-import { BattlePlayerType, SessionData, Participant, SessionStatus, LouncheStateResponse } from 'app/types/battles';
-import { HexString } from '@polkadot/util/types';
+import { SessionData, Participant, SessionStatus, LouncheStateResponse } from 'app/types/battles';
 
 type Program = {
   launch?: LouncheStateResponse;
   setLaunch: Dispatch<SetStateAction<LouncheStateResponse | undefined>>;
   status: SessionStatus;
-  setStatus: Dispatch<SetStateAction<SessionStatus>>
+  setStatus: Dispatch<SetStateAction<SessionStatus>>;
   sessionIsOver: boolean;
   setSessionIsOver: Dispatch<SetStateAction<boolean>>;
   players: Participant;
@@ -32,7 +31,7 @@ const useProgram = (): Program => {
     sessionData,
     setSessionData,
     sessionIsOver,
-    setSessionIsOver
+    setSessionIsOver,
   };
 };
 
