@@ -43,7 +43,7 @@ function WalletInfo({ account }: WalletInfoProps) {
           </button>
         </div>
       ) : (
-        <Button text="connect" onClick={handleOpenWalletModal} />
+        <Button text="connect" onClick={handleOpenWalletModal} className={cx(styles.btn)} />
       )}
       {isWalletModalOpen && <WalletModal onClose={handleCloseWalletModal} />}
     </>
