@@ -1,6 +1,8 @@
 name: Build and Deploy dapps GASA
 
 on:
+  push: 
+     branches: ['yd/testnet-version-gasa']
   workflow_dispatch:
 
 env:
