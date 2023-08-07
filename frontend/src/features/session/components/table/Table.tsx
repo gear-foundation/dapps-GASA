@@ -1,5 +1,6 @@
 import { CSSProperties, Fragment } from 'react';
 import clsx from 'clsx';
+import { shortenString } from 'features/session/utils';
 import { ReactComponent as CheckSVG } from '../../assets/check.svg';
 import { ReactComponent as CrossSVG } from '../../assets/cross.svg';
 import { PLAYER_COLORS, TABLE_HEADINGS } from '../../consts';
@@ -24,7 +25,7 @@ function Table({ data }: Props) {
         <div
           className={clsx(styles.bodyCell, styles.firstColumn)}
           style={{ '--color': PLAYER_COLORS[index] } as CSSProperties}>
-          {participant}
+          <span>{shortenString(participant)}</span>
         </div>
         <div className={styles.bodyCell}>{deadRound ? <CrossSVG /> : <CheckSVG />}</div>
         <div className={styles.bodyCell}>{fuelLeft}</div>

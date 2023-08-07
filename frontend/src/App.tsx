@@ -3,12 +3,19 @@ import { Routing } from 'pages';
 import { Header, Footer, ApiLoader } from 'components';
 import { withProviders } from 'hocs';
 import 'App.scss';
+import { useFTBalanceSync } from 'features/score-balance/hooks';
+import { useAuthSync } from 'features/auth/hooks';
+import { useWalletSync } from 'features/wallet/hooks';
 
 function Component() {
   const { isApiReady } = useApi();
   const { isAccountReady } = useAccount();
 
   const isAppReady = isApiReady && isAccountReady;
+
+  useWalletSync();
+  useAuthSync();
+  useFTBalanceSync();
 
   return (
     <>

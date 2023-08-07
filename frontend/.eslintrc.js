@@ -19,6 +19,8 @@ module.exports = {
   parser: '@typescript-eslint/parser',
   parserOptions: {
     project: './tsconfig.json',
+    tsconfigRootDir: __dirname,
+    sourceType: 'module',
   },
   plugins: ['react', '@typescript-eslint'],
   rules: {
@@ -26,11 +28,11 @@ module.exports = {
 
     'import/prefer-default-export': 'off', // force named exports
     'import/no-default-export': 'error',
-
+    'import/no-extraneous-dependencies': 'off',
     '@typescript-eslint/no-unused-vars': 'warn', // 'error' is not convinient in development
-
+    'react/jsx-no-useless-fragment': 'off',
     'consistent-return': 'off', // we want functions to have different return behavior
-
+    'spaced-comment': 'off',
     'react/jsx-props-no-spreading': [
       'error',
       { exceptions: ['input', 'Input', 'FileInput', 'Textarea', 'Select', 'Range'] },

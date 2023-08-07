@@ -1,0 +1,20 @@
+.container {
+  height: 97px;
+  padding-left: 25px;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid #2BD07180;
+  border-radius: 8px;
+  justify-content: center;
+}
+
+.text {
+  font-size: 14px;
+  font-weight: 400;
+  color: #FFFFFF;
+  letter-spacing: 1px;
+
+  &Red {
+    background: #F24A4A;
+  }
+}

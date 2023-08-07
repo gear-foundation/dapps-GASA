@@ -1,28 +1,35 @@
-import { withoutCommas } from '@gear-js/react-hooks';
+import { useState } from 'react';
 import clsx from 'clsx';
+import { encodeAddress } from '@gear-js/api';
+import { useAccount, withoutCommas } from '@gear-js/react-hooks';
+import src from 'assets/images/earth.gif';
 import { Container } from 'components';
-import { Auth, useAuth } from '../../../auth';
-import src from '../../assets/earth.gif';
-import { Session } from '../../types';
+import { Participant, Session } from '../../types';
 import { Traits } from '../traits';
 import { Form } from '../form';
 import styles from './Start.module.scss';
+import { ParticipantsTable } from '../participants-table';
+import { MaximumPlayersWarning } from '../maximum-players-warning';
+import { SuccessfullyRegisteredInfo } from '../successfully-registered-info';
 
 type Props = {
-  sessionId: string;
+  participants: Participant[];
   session: Session;
+  isUserAdmin: boolean;
+  userAddress: string;
 };
 
-function Start({ sessionId, session }: Props) {
-  const { account } = useAuth();
+function Start({ participants, session, isUserAdmin, userAddress }: Props) {
+  const { account } = useAccount();
   const { decodedAddress } = account || {};
 
-  const { registered, altitude, weather, fuelPrice, reward, bet } = session;
-  const players = Object.keys(registered);
-  const playersCount = players.length;
-  const isRegistered = decodedAddress ? !!registered[decodedAddress] : false;
+  const { altitude, weather, fuelPrice, reward, sessionId } = session;
+  const playersCount = participants?.length ? participants.length + 1 : 1;
+  const isRegistered = decodedAddress ? !!participants.some((participant) => participant[0] === decodedAddress) : false;
 
   const containerClassName = clsx(styles.container, decodedAddress ? styles.smallMargin : styles.largeMargin);
+
+  const [registrationStatus, setRegistrationStatus] = useState<'registration' | 'success' | 'error'>('registration');
 
   return (
     <div className={styles.mainContainer}>
@@ -37,19 +44,33 @@ function Start({ sessionId, session }: Props) {
         </header>
 
         <Container className={containerClassName}>
+          {isUserAdmin && (
+            <ParticipantsTable
+              data={[
+                {
+                  id: userAddress,
+                  playerAddress: encodeAddress(userAddress),
+                },
+                ...participants.map((item) => ({
+                  id: item[0],
+                  playerAddress: encodeAddress(item[0]),
+                })),
+              ]}
+              userAddress={userAddress}
+            />
+          )}
           <Traits altitude={altitude} weather={weather} fuelPrice={fuelPrice} reward={reward} />
 
           <footer>
-            {decodedAddress ? (
-              <>
-                {isRegistered && <p>You&apos;re registered.</p>}
-                {!isRegistered && <Form weather={weather} defaultDeposit={withoutCommas(bet || '0')} />}
-              </>
-            ) : (
-              <div className={styles.wallet}>
-                <Auth hideResetButton />
-                <p>Connect wallet to start calculation and launch</p>
-              </div>
+            {isRegistered && <SuccessfullyRegisteredInfo />}
+            {!isRegistered && registrationStatus === 'error' && !isUserAdmin && <MaximumPlayersWarning />}
+            {!isRegistered && registrationStatus === 'registration' && (
+              <Form
+                weather={weather}
+                defaultDeposit={withoutCommas('0')}
+                isAdmin={isUserAdmin}
+                setRegistrationStatus={setRegistrationStatus}
+              />
             )}
           </footer>
         </Container>

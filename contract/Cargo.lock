@@ -2077,7 +2077,7 @@ dependencies = [
 
 [[package]]
 name = "launch-io"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "gmeta",
  "gstd",
@@ -2087,7 +2087,7 @@ dependencies = [
 
 [[package]]
 name = "launch-site"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "gclient",
  "gear-wasm-builder",
@@ -2103,7 +2103,7 @@ dependencies = [
 
 [[package]]
 name = "launch-state"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "gear-wasm-builder",
  "gmeta",

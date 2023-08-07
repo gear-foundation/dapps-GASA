@@ -1,4 +1,4 @@
-import { useAlert } from '@gear-js/react-hooks';
+import { useAlert, useReadFullState } from '@gear-js/react-hooks';
 import { getProgramMetadata, getStateMetadata, ProgramMetadata, StateMetadata } from '@gear-js/api';
 import { HexString } from '@polkadot/util/types';
 import { useEffect, useState } from 'react';
@@ -41,4 +41,9 @@ function useStateMetadata(source: string) {
   return stateMetadata;
 }
 
-export { useProgramMetadata, useStateMetadata };
+function useReadState<T>({ programId, meta }: { programId?: HexString; meta: string }) {
+  const metadata = useProgramMetadata(meta);
+  return useReadFullState<T>(programId, metadata);
+}
+
+export { useProgramMetadata, useStateMetadata, useReadState };

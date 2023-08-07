@@ -1,0 +1,21 @@
+.score-content {
+    display: flex;
+    align-items: center;
+    justify-content: end;
+
+    &-value {
+        font-size: 18px;
+        font-weight: 700;
+    }
+
+    &-unit {
+        font-size: 10px;
+        font-weight: 400;
+        align-self: end;
+        margin: 0 0 2px 2px;
+    }
+
+    &-img {
+        margin-right: 5px;
+    }
+}
