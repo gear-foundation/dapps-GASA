@@ -2,8 +2,8 @@
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 import { useEffect, useRef, MouseEvent, useCallback } from 'react';
 import { cx } from 'utils';
-import { Button } from '@gear-js/ui';
-import { ReactComponent as CrossSVG } from 'assets/images/icons/cross-icon.svg';
+import { Button } from 'components/layout/button';
+import crossSVG from 'assets/images/icons/cross-icon.svg';
 import styles from './Modal.module.scss';
 import { ModalProps } from './Modal.interface';
 
@@ -42,7 +42,7 @@ function Modal({ heading, children, onClose }: ModalProps) {
       <div className={cx(styles.wrapper)}>
         <header className={cx(styles.header)}>
           <h2>{heading}</h2>
-          <Button size="small" icon={CrossSVG} onClick={onClose} />
+          <Button size="small" variant="icon" icon={crossSVG} onClick={onClose} />
         </header>
         {children}
       </div>

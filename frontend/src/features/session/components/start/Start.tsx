@@ -1,7 +1,19 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import clsx from 'clsx';
-import { encodeAddress } from '@gear-js/api';
-import { useAccount, withoutCommas } from '@gear-js/react-hooks';
+import {
+  HexString,
+  MessageQueued,
+  MessageWaited,
+  UserMessageRead,
+  UserMessageSent,
+  UserMessageSentData,
+  decodeAddress,
+  encodeAddress,
+} from '@gear-js/api';
+import { useAtomValue } from 'jotai';
+import { CURRENT_CONTRACT_ADDRESS_ATOM } from 'atoms';
+import { useAccount, useApi, withoutCommas } from '@gear-js/react-hooks';
+import { UnsubscribePromise } from '@polkadot/api/types';
 import src from 'assets/images/earth.gif';
 import { Container } from 'components';
 import { Participant, Session } from '../../types';
@@ -20,6 +32,8 @@ type Props = {
 };
 
 function Start({ participants, session, isUserAdmin, userAddress }: Props) {
+  const currentContractAddress = useAtomValue(CURRENT_CONTRACT_ADDRESS_ATOM);
+  const { api } = useApi();
   const { account } = useAccount();
   const { decodedAddress } = account || {};
 
@@ -30,6 +44,21 @@ function Start({ participants, session, isUserAdmin, userAddress }: Props) {
   const containerClassName = clsx(styles.container, decodedAddress ? styles.smallMargin : styles.largeMargin);
 
   const [registrationStatus, setRegistrationStatus] = useState<'registration' | 'success' | 'error'>('registration');
+
+  const handleEvents = ({ data }: UserMessageSent) => {};
+
+  useEffect(() => {
+    let unsub: UnsubscribePromise | undefined;
+
+    if (api && decodedAddress) {
+      unsub = api.gearEvents.subscribeToGearEvent('UserMessageSent', handleEvents);
+    }
+
+    return () => {
+      if (unsub) unsub.then((unsubCallback) => unsubCallback());
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [api, decodedAddress]);
 
   return (
     <div className={styles.mainContainer}>
@@ -64,7 +93,7 @@ function Start({ participants, session, isUserAdmin, userAddress }: Props) {
           <footer>
             {isRegistered && <SuccessfullyRegisteredInfo />}
             {!isRegistered && registrationStatus === 'error' && !isUserAdmin && <MaximumPlayersWarning />}
-            {!isRegistered && registrationStatus === 'registration' && (
+            {isRegistered && registrationStatus === 'registration' && (
               <Form
                 weather={weather}
                 defaultDeposit={withoutCommas('0')}

@@ -3,12 +3,12 @@ import Identicon from '@polkadot/react-identicon';
 import { decodeAddress } from '@gear-js/api';
 import { useAccount } from '@gear-js/react-hooks';
 import { useAuth } from 'features/auth/hooks';
-import { Button } from '@gear-js/ui';
+import { Button } from 'components/layout/button';
 import { Modal } from 'components/layout';
 import { cx, copyToClipboard } from 'utils';
-import { ReactComponent as CopyToClipboardSVG } from 'assets/images/icons/binary-code.svg';
+import copyToClipboardSVG from 'assets/images/icons/binary-code.svg';
 import penEditSVG from 'assets/images/icons/pen-edit-icon.svg';
-import { ReactComponent as ExitSVG } from 'assets/images/icons/exit-icon.svg';
+import exitSVG from 'assets/images/icons/exit-icon.svg';
 import { WALLET } from '../../consts';
 import { useWallet } from '../../hooks';
 import { WalletItem } from '../wallet-item';
@@ -76,7 +76,7 @@ function WalletModal({ onClose }: WalletModalProps) {
             <Identicon value={address} size={21} theme="polkadot" />
             <span>{meta.name}</span>
           </button>
-          <Button icon={CopyToClipboardSVG} onClick={handleCopyClick} />
+          <Button icon={copyToClipboardSVG} onClick={handleCopyClick} variant="icon" />
         </li>
       );
     });
@@ -98,7 +98,7 @@ function WalletModal({ onClose }: WalletModalProps) {
           </button>
           {account && (
             <div className={cx(styles['logout-button-container'])}>
-              <Button icon={ExitSVG} />
+              <Button icon={exitSVG} variant="icon" />
               <button type="button" className={cx(styles['logout-button'])} onClick={handleLogoutButtonClick}>
                 Exit
               </button>

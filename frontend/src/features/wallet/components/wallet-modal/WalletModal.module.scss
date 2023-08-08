@@ -11,12 +11,12 @@
       align-items: center;
       outline: none;
       border: none;
-      background: #000;
+      background: rgb(34, 34, 34);
       transition: all 0.3s;
       cursor: pointer;
   
       &:hover {
-        background:#000;
+        background:#161616;
       }
     }
   }

@@ -25,7 +25,8 @@ module.exports = {
   plugins: ['react', '@typescript-eslint'],
   rules: {
     'react/require-default-props': 'off', // we don't use prop-types
-
+    'react/jsx-props-no-spreading': 'off',
+    'react/button-has-type': 'off',
     'import/prefer-default-export': 'off', // force named exports
     'import/no-default-export': 'error',
     'import/no-extraneous-dependencies': 'off',
@@ -33,9 +34,5 @@ module.exports = {
     'react/jsx-no-useless-fragment': 'off',
     'consistent-return': 'off', // we want functions to have different return behavior
     'spaced-comment': 'off',
-    'react/jsx-props-no-spreading': [
-      'error',
-      { exceptions: ['input', 'Input', 'FileInput', 'Textarea', 'Select', 'Range'] },
-    ], // disable for form elements, cuz @mantine/form input props needs to be desctructured
   },
 };

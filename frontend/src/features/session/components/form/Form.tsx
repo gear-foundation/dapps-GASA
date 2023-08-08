@@ -68,9 +68,6 @@ function Form({ weather, defaultDeposit, isAdmin, setRegistrationStatus }: Props
         { StartGame: { fuel_amount: fuel, payload_amount: payload } },
         {
           value: deposit,
-          onSuccess: () => {
-            setRegistrationStatus('success');
-          },
           onError: () => {
             setRegistrationStatus('error');
           },
