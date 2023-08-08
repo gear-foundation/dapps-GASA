@@ -1,11 +1,16 @@
 .container {
   height: 97px;
-  padding-left: 25px;
+  padding: 19px 24px;
+  display: flex;
+  border-radius: 8px;
+  background: #FFFFFF0A;
+  gap: 15px;
+}
+
+.content {
   display: flex;
   flex-direction: column;
-  border: 1px solid #2BD07180;
-  border-radius: 8px;
-  justify-content: center;
+  gap: 8px;
 }
 
 .text {
@@ -15,6 +20,6 @@
   letter-spacing: 1px;
 
   &Red {
-    background: #F24A4A;
+    color: #F24A4A;
   }
 }

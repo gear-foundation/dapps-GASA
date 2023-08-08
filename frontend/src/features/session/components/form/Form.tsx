@@ -15,7 +15,9 @@ type Props = {
   weather: string;
   defaultDeposit: string;
   isAdmin: boolean;
-  setRegistrationStatus: Dispatch<SetStateAction<'error' | 'registration' | 'success'>>;
+  setRegistrationStatus: Dispatch<
+    SetStateAction<'registration' | 'success' | 'error' | 'NotEnoughParticipants' | 'MaximumPlayersReached'>
+  >;
 };
 
 function Form({ weather, defaultDeposit, isAdmin, setRegistrationStatus }: Props) {
@@ -56,9 +58,6 @@ function Form({ weather, defaultDeposit, isAdmin, setRegistrationStatus }: Props
           onSuccess: () => {
             setRegistrationStatus('success');
           },
-          onError: () => {
-            setRegistrationStatus('error');
-          },
         },
       );
     }
@@ -68,9 +67,6 @@ function Form({ weather, defaultDeposit, isAdmin, setRegistrationStatus }: Props
         { StartGame: { fuel_amount: fuel, payload_amount: payload } },
         {
           value: deposit,
-          onError: () => {
-            setRegistrationStatus('error');
-          },
         },
       );
     }
