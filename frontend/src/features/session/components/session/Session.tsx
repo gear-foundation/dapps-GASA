@@ -108,7 +108,7 @@ function Session({ session, turns, rankings, userId }: Props) {
         </header>
 
         <div className={styles.body}>
-          <Table data={getEvents()} />
+          <Table data={getEvents()} userId={userId} />
 
           <Traits altitude={altitude} weather={weather} fuelPrice={fuelPrice} reward={reward} />
 
