@@ -1,162 +1,153 @@
 #![no_std]
 
-use codec::{Decode, Encode};
-use gmeta::{In, InOut, Metadata};
-use gstd::{prelude::*, ActorId};
+use gmeta::{InOut, Metadata};
+use gstd::{errors::Error as GstdError, prelude::*, ActorId};
 
-pub struct ProgramMetadata;
+pub struct ContractMetadata;
 
-impl Metadata for ProgramMetadata {
-    type Init = In<Initialize>;
-    type Handle = InOut<Action, Event>;
+impl Metadata for ContractMetadata {
+    type Init = InOut<Initialize, Result<(), Error>>;
+    type Handle = InOut<Action, Result<Event, Error>>;
     type Reply = InOut<(), ()>;
     type Others = InOut<(), ()>;
     type Signal = ();
-    type State = LaunchSite;
+    type State = State;
 }
 
-#[derive(Encode, Decode, TypeInfo, Debug)]
-pub struct Initialize {
-    pub name: String,
-    pub after_execution_period: u32,
-    pub registered_threshold_to_execute: u32,
-    // pub after_threshold_wait_period_to_execute: u32,
+#[derive(Encode, Decode, TypeInfo, Debug, PartialEq, Eq, PartialOrd, Ord, Clone, Hash)]
+pub struct State {
+    pub admin: ActorId,
+
+    pub session: Session,
+    pub is_session_ended: bool,
+
+    pub participants: Vec<(ActorId, Participant)>,
+    pub turns: Vec<Vec<(ActorId, Turn)>>,
+    pub rankings: Vec<(ActorId, u128)>,
+
+    pub master: ActorId,
 }
 
-#[derive(Encode, Decode, TypeInfo, Debug)]
-pub enum Action {
-    Info,
-    // RegisterParticipant(String),
-    ChangeParticipantName(String),
-    StartNewSession,
-    // RegisterOnLaunch {
-    //     fuel_amount: u32,
-    //     payload_amount: u32,
-    // },
-    RegisterParticipantOnLaunch {
-        name: String,
-        fuel_amount: u32,
-        payload_amount: u32,
-    },
-    ExecuteSession,
-    ReserveGas,
-}
+#[derive(Encode, Decode, TypeInfo, Debug, PartialEq, Eq, PartialOrd, Ord, Clone, Copy, Hash)]
+pub struct Session {
+    pub session_id: u128,
 
-#[derive(Encode, Debug, PartialEq, Eq, Decode, TypeInfo)]
-pub enum Event {
-    Info {
-        owner: ActorId,
-        name: String,
-        has_current_session: bool,
-    },
-    NewParticipant {
-        id: ActorId,
-        name: String,
-    },
-    ParticipantNameChange {
-        id: ActorId,
-        name: String,
-    },
-    NewLaunch {
-        id: u32,
-        name: String,
-        weather: u32,
-        altitude: u32,
-        fuel_price: u32,
-        payload_value: u32,
-    },
-    LaunchRegistration {
-        id: u32,
-        participant: ActorId,
-    },
-    LaunchStarted {
-        id: u32,
-    },
-    LaunchFinished {
-        id: u32,
-        stats: Vec<(ActorId, bool, u32, u128)>, // participant id, success, final altitude, earnings
-    },
-    SessionInfo {
-        weather: u32,
-        altitude: u32,
-        fuel_price: u32,
-        payload_value: u32,
-    },
-    NoCurrentSession,
-    GasReserved,
-}
-
-#[derive(Default, Encode, Decode, TypeInfo)]
-pub struct CurrentSesionInfo {
-    pub name: String,
-    pub weather: u32,
-    pub altitude: u32,
-    pub fuel_price: u32,
-    pub payload_value: u32,
-}
-
-#[derive(Default, Encode, Decode, TypeInfo, Clone, Debug, Eq, PartialEq, PartialOrd, Ord)]
-pub struct CurrentStat {
-    pub participant: ActorId,
-    pub dead_round: Option<u32>,
-    pub fuel_left: u32,
-    pub fuel_capacity: u32,
-    pub last_altitude: u32,
-    pub payload: u32,
-    pub halt: Option<RocketHalt>,
-}
-
-#[derive(Default, Encode, Decode, TypeInfo, Debug)]
-pub struct LaunchSite {
-    pub name: String,
-    pub owner: ActorId,
-    pub participants: BTreeMap<ActorId, Participant>,
-    pub current_session: Option<CurrentSession>,
-    pub events: BTreeMap<u32, BTreeSet<CurrentStat>>,
-    pub state: SessionState,
-    pub session_id: u32,
-    pub after_execution_period: u32,
-    pub registered_threshold_to_execute: u32,
-    pub after_threshold_wait_period_to_execute: u32,
-}
-
-#[derive(Default, Encode, Decode, TypeInfo, Debug)]
-pub struct SessionStrategy {
-    pub fuel: u32,
-    pub payload: u32,
-}
-
-#[derive(Default, Encode, Decode, TypeInfo, Debug)]
-pub struct CurrentSession {
-    pub altitude: u32,
-    pub weather: u32,
-    pub fuel_price: u32,
+    pub altitude: u16,
+    pub weather: Weather,
+    pub fuel_price: u8,
     pub reward: u128,
-    pub registered: BTreeMap<ActorId, (SessionStrategy, Participant)>,
-    pub bet: Option<u128>,
 }
 
-#[derive(Default, Encode, Decode, TypeInfo, Debug, Clone)]
-pub struct Participant {
-    pub name: String,
-    pub score: u128,
-    pub balance: u128,
+impl Default for Session {
+    fn default() -> Self {
+        Self {
+            session_id: 0,
+
+            altitude: MIN_TURN_ALTITUDE * TOTAL_TURNS as u16,
+            weather: Weather::default(),
+            fuel_price: MIN_FUEL_PRICE,
+            reward: MIN_REWARD,
+        }
+    }
 }
 
-#[derive(Encode, Decode, TypeInfo, Debug, Clone, PartialEq, Eq, PartialOrd, Ord)]
-pub enum RocketHalt {
-    Overfilled,
-    Overfuelled,
-    SeparationFailure,
-    Asteroid,
-    NotEnoughFuel,
-    EngineError,
+impl Default for State {
+    fn default() -> Self {
+        Self {
+            admin: ActorId::zero(),
+
+            session: Session::default(),
+            is_session_ended: true,
+
+            participants: vec![],
+            turns: vec![],
+            rankings: vec![],
+
+            master: ActorId::zero(),
+        }
+    }
 }
 
-#[derive(Default, Encode, Decode, TypeInfo, Debug, Clone, PartialEq, Eq)]
-pub enum SessionState {
-    SessionIsOver,
+#[derive(
+    Default, Encode, Decode, TypeInfo, Debug, PartialEq, Eq, PartialOrd, Ord, Clone, Copy, Hash,
+)]
+pub struct Initialize {
+    pub master: ActorId,
+}
+
+#[derive(Encode, Decode, TypeInfo, Debug, PartialEq, Eq, PartialOrd, Ord, Clone, Copy, Hash)]
+pub enum Action {
+    ChangeAdmin(ActorId),
+    CreateNewSession,
+    Register(Participant),
+    StartGame(Participant),
+}
+
+#[derive(Encode, Decode, TypeInfo, Debug, PartialEq, Eq, PartialOrd, Ord, Clone, Hash)]
+pub enum Event {
+    AdminChanged(ActorId, ActorId),
+    NewSession(Session),
+    Registered(ActorId, Participant),
+    GameFinished(Vec<Vec<(ActorId, Turn)>>),
+}
+
+#[derive(Encode, Decode, TypeInfo, Debug, PartialEq, Eq, PartialOrd, Ord, Clone, Copy, Hash)]
+pub enum Turn {
+    Alive { fuel_left: u8, payload_amount: u8 },
+    Destroyed(HaltReason),
+}
+
+#[derive(Encode, Decode, TypeInfo, Debug, PartialEq, Eq, PartialOrd, Ord, Clone, Hash)]
+pub enum Error {
+    AccessDenied,
+    FullSession,
+    EndedSession,
+    FuelOrPayloadOverload,
+    NotEnoughParticipants,
+    GstdError(String),
+}
+
+impl From<GstdError> for Error {
+    fn from(error: GstdError) -> Self {
+        Self::GstdError(error.to_string())
+    }
+}
+
+#[derive(
+    Default, Encode, Decode, TypeInfo, Debug, PartialEq, Eq, PartialOrd, Ord, Clone, Copy, Hash,
+)]
+pub enum Weather {
     #[default]
-    NoSession,
-    Registration,
+    Clear,
+    Cloudy,
+    Rainy,
+    Stormy,
+    Thunder,
+    Tornado,
 }
+
+#[derive(
+    Default, Encode, Decode, TypeInfo, Debug, PartialEq, Eq, PartialOrd, Ord, Clone, Copy, Hash,
+)]
+pub struct Participant {
+    pub fuel_amount: u8,
+    pub payload_amount: u8,
+}
+
+#[derive(Encode, Decode, TypeInfo, Debug, PartialEq, Eq, PartialOrd, Ord, Clone, Copy, Hash)]
+pub enum HaltReason {
+    PayloadOverload,
+    FuelOverload,
+    SeparationFailure,
+    AsteroidCollision,
+    FuelShortage,
+    EngineFailure,
+}
+
+pub const MIN_FUEL_PRICE: u8 = 80;
+pub const MAX_FUEL_PRICE: u8 = 120;
+pub const MIN_REWARD: u128 = 80;
+pub const MAX_REWARD: u128 = 360;
+pub const MIN_TURN_ALTITUDE: u16 = 2_600;
+pub const MAX_TURN_ALTITUDE: u16 = 5_000;
+pub const TOTAL_TURNS: usize = 3;

@@ -34,11 +34,10 @@ Risk types effect the mission probability.
 | Type | Failure probability |
 | --- | ----------- |
 | 🚫 Engine error | 3% |
-| 🛤 Trajectory failure | 3% |
-| 🚀 Separation error | 3% |
-| 🗿 Asteroid | 10% + weather |
-| ⛽ Fuel > 80% | 10% + weather |
-| 📦 Payload > 80% | 10% + weather |
+| 🚀 Separation error | (5 + weather)% |
+| 🗿 Asteroid | (10 + weather)% |
+| ⛽ Fuel > (80 - 2 * weather)% | 10% |
+| 📦 Payload > (80 - 2 * weather)% | 10% |
 
 Weather affects the probability multipliers.
 
@@ -52,16 +51,9 @@ Weather affects the probability multipliers.
 | 🌪 tornado | 5 |
 
 ## End Game
-The main goal is to deliver the cargo to orbit without fuel surplus. 
-A certain reward multiplier apply based on the fuel tank state.
-If the player has lots of remaining fuel the delivery reward decreases.
+The main goal is to deliver the cargo to orbit without fuel shortage.
 
-| Fuel left | Multiplier |
-| --- | ----------- |
-| Fuel tank = 0 | Session reward * 1.7x |
-| Fuel tank > 0 | Session reward * 0.5x..1.4x |
-
-[Leaderboard]() is collecting results of previous rocket launches.
+Session reward = payload * reward * altitude + remaining fuel
 
 ## ToDo
 - [ ] Add Commit-reveal-scheme for registration phase;
@@ -69,5 +61,3 @@ If the player has lots of remaining fuel the delivery reward decreases.
 - [ ] Add PvP elements for the game;
 - [ ] Implement speed formula;
 - [ ] Build mission probability calculator for registration page;
-
-

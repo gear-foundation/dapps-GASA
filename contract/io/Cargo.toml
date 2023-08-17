@@ -1,5 +1,5 @@
 [package]
-name = "launch-io"
+name = "rockets-game-io"
 version.workspace = true
 edition.workspace = true
 license.workspace = true
@@ -8,5 +8,5 @@ authors.workspace = true
 [dependencies]
 gmeta.workspace = true
 gstd.workspace = true
-scale-info = { workspace = true, features = ["derive"] }
-parity-scale-codec = { workspace = true, features = ["derive", "full"] }
+scale-info.workspace = true
+parity-scale-codec.workspace = true

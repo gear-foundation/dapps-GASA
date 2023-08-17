@@ -1,47 +1,38 @@
 [package]
-name = "launch-site"
+name = "rockets-game"
 version.workspace = true
 edition.workspace = true
 license.workspace = true
 authors.workspace = true
 
 [workspace.package]
-version = "0.1.1"
+version = "0.2.0"
 edition = "2021"
 authors = ["Gear Technologies"]
 license = "MIT"
 
 [dependencies]
-gstd = { workspace = true, features = ["debug"] }
-scale-info = { workspace = true, features = ["derive"] }
-parity-scale-codec = { workspace = true, features = ["derive", "full"] }
-launch-io.workspace = true
+gstd.workspace = true
+scale-info.workspace = true
+parity-scale-codec.workspace = true
+rockets-game-io.workspace = true
+num-traits.workspace = true
 
 [build-dependencies]
 gear-wasm-builder.workspace = true
 gmeta.workspace = true
-launch-io.workspace = true
+rockets-game-io.workspace = true
 
-[dev-dependencies]
-gtest.workspace = true
-gclient.workspace = true
-tokio.workspace = true
-launch-state = { workspace = true, features = ["binary-vendor"] }
+[workspace.dependencies]
+gstd = { git = "https://github.com/gear-tech/gear", rev = "946ac47" }
+gear-wasm-builder = { git = "https://github.com/gear-tech/gear", rev = "946ac47" }
+gtest = { git = "https://github.com/gear-tech/gear", rev = "946ac47" }
+gclient = { git = "https://github.com/gear-tech/gear", rev = "946ac47" }
+gmeta = { git = "https://github.com/gear-tech/gear", rev = "946ac47" }
+scale-info = { version = "2", default-features = false }
+parity-scale-codec = { version = "3", default-features = false }
+rockets-game-io.path = "io"
+num-traits = { version = "0.2", default-features = false }
 
 [features]
 binary-vendor = []
-
-[workspace.dependencies]
-gstd = { git = "https://github.com/gear-tech/gear.git", features = ["debug"], rev = "946ac47" }
-scale-info = { version = "2", default-features = false, features = ["derive"] }
-parity-scale-codec = { version = "3", default-features = false }
-launch-io = { path = "io" }
-launch-state = { path = "state" }
-gear-wasm-builder = { git = "https://github.com/gear-tech/gear.git", rev = "946ac47" }
-gtest = { git = "https://github.com/gear-tech/gear.git", rev = "946ac47" }
-gclient = { git = "https://github.com/gear-tech/gear.git", rev = "946ac47" }
-tokio = "1"
-gmeta = { git = "https://github.com/gear-tech/gear.git", rev = "946ac47" }
-
-[workspace]
-members = ["state"]
