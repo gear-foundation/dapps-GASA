@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import Identicon from '@polkadot/react-identicon';
 import { decodeAddress } from '@gear-js/api';
-import { useAccount } from '@gear-js/react-hooks';
+import { useAccount, useAlert } from '@gear-js/react-hooks';
 import { useAuth } from 'features/auth/hooks';
 import { Button } from 'components/layout/button';
 import { Modal } from 'components/layout';
@@ -19,6 +19,7 @@ import { WalletModalProps } from './WalletModal.interface';
 
 function WalletModal({ onClose }: WalletModalProps) {
   const { extensions, account } = useAccount();
+  const alert = useAlert();
   const { wallet, walletAccounts, setWalletId, resetWalletId, getWalletAccounts, saveWallet, removeWallet } =
     useWallet();
   const navigate = useNavigate();
@@ -62,7 +63,7 @@ function WalletModal({ onClose }: WalletModalProps) {
       const handleCopyClick = () => {
         const decodedAddress = decodeAddress(address);
 
-        copyToClipboard(decodedAddress);
+        copyToClipboard(decodedAddress).then(() => alert.success('copied'));
         onClose();
       };
 
@@ -73,8 +74,10 @@ function WalletModal({ onClose }: WalletModalProps) {
             className={cx(styles['account-button'], isActive ? styles.active : '')}
             onClick={handleClick}
             disabled={isActive}>
-            <Identicon value={address} size={21} theme="polkadot" />
-            <span>{meta.name}</span>
+            <div className={cx(styles['account-button-content'])}>
+              <Identicon value={address} size={21} theme="polkadot" className={cx(styles['account-identicon'])} />
+              <span className={cx(styles['account-name'])}>{meta.name}</span>
+            </div>
           </button>
           <Button icon={copyToClipboardSVG} onClick={handleCopyClick} variant="icon" />
         </li>

@@ -10,12 +10,15 @@
   font-size: 56px;
   font-weight: 275;
   color: #ffffff;
-  letter-spacing: 5px;
+  letter-spacing: 0.08em;
 }
 
 .description {
+  text-transform: capitalize;
+  width: 574px;
   font-size: 12px;
   font-weight: 275;
   color: #ffffff;
-  letter-spacing: 1px;
+  letter-spacing: 0.08em;
+  line-height: 20px;
 }

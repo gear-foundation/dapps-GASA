@@ -1,3 +1,4 @@
+import { Fragment } from 'react';
 import { cx } from 'utils';
 import { shortenString } from 'features/session/utils';
 import styles from './ParticipantsTable.module.scss';
@@ -30,21 +31,23 @@ function ParticipantsTable({ data, userAddress }: Props) {
                 Object.keys(modifiedData[0]).map(
                   (cellName: string) =>
                     cellName !== 'id' && (
-                      <>
+                      <Fragment key={modifiedData[0].id}>
                         <td className={cx(styles.headTd)}>#</td>
                         <td className={cx(styles.headTd)}>{cellName}</td>
-                      </>
+                      </Fragment>
                     ),
                 )}
             </tr>
           </thead>
           <tbody className={cx(styles.body)}>
             {modifiedData?.map((row, rowIndex) => (
-              <tr className={cx(styles.bodyTr, isYourAddress(row.playerAddress) ? styles.bodyTrWithYourAddress : '')}>
+              <tr
+                key={row.id}
+                className={cx(styles.bodyTr, isYourAddress(row.playerAddress) ? styles.bodyTrWithYourAddress : '')}>
                 {Object.keys(row).map(
                   (cellName) =>
                     cellName !== 'id' && (
-                      <>
+                      <Fragment key={cellName}>
                         <td className={cx(styles.bodyTd, styles.bodyTdIndex)}>{rowIndex + 1}</td>
                         <td className={cx(styles.bodyTd, styles[`bodyTd${cellName}`])}>
                           {cellName === 'playerAddress' ? (
@@ -58,7 +61,7 @@ function ParticipantsTable({ data, userAddress }: Props) {
                             row[cellName as keyof TableData]
                           )}
                         </td>
-                      </>
+                      </Fragment>
                     ),
                 )}
               </tr>

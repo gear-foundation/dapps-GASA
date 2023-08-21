@@ -1,9 +1,13 @@
 import { HexString } from '@polkadot/util/types';
 
 export type IFTMain = {
-  admin: HexString;
-  ftLogicId: HexString;
-  transactions: [];
+  admins: HexString[];
+  allowances: HexString[];
+  balances: Array<[HexString, string]>;
+  decimals: string;
+  name: string;
+  symbol: string;
+  totalSupply: string;
 };
 
 export type IFTLogic = {

@@ -50,6 +50,9 @@ function EnterContractAddress({ doesSessionExist, isUserAdmin, isStateComing }: 
             onSuccess: () => {
               setIsContractAddressInitialized(true);
             },
+            onError: () => {
+              console.log('error');
+            },
           },
         );
       }
