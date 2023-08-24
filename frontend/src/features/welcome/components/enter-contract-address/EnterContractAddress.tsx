@@ -60,12 +60,13 @@ function EnterContractAddress({ doesSessionExist, isUserAdmin, isStateComing }: 
         setIsContractAddressInitialized(true);
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     contractAddress,
     doesSessionExist,
     isUserAdmin,
     meta,
-    sendNewSessionMessage,
+    // sendNewSessionMessage,
     setIsContractAddressInitialized,
     isContractAddressInitialized,
     isStateComing,

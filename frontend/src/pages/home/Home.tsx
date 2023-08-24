@@ -16,7 +16,7 @@ function Home() {
   const { sessionId, altitude, weather, fuelPrice, reward } = session || {};
 
   const isUserAdmin = admin === account?.decodedAddress;
-  const doesSessionExist = !!Number(sessionId);
+  const doesSessionExist = !!isSessionEnded;
   const isStateComing = !!state;
 
   return (
@@ -36,7 +36,7 @@ function Home() {
       )}
       {currentContractAddress && isContractAddressInitialized && (
         <>
-          {doesSessionExist && sessionId && participants ? (
+          {participants ? (
             <>
               {!isSessionEnded && (
                 <Start

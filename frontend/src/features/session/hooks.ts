@@ -7,7 +7,7 @@ import { LaunchState } from './types';
 function useNewSessionMessage(address: string) {
   const meta = useProgramMetadata(metaTxt);
 
-  return { meta, message: useSendMessage(address as HexString, meta, { isMaxGasLimit: true }) };
+  return { meta: !!meta, message: useSendMessage(address as HexString, meta, { isMaxGasLimit: true }) };
 }
 
 function useLaunchState(address: string) {

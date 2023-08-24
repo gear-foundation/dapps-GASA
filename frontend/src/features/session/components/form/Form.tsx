@@ -54,7 +54,6 @@ function Form({ weather, defaultDeposit, isAdmin, setRegistrationStatus }: Props
       sendMessage(
         { Register: { fuel_amount: fuel, payload_amount: payload } },
         {
-          value: deposit,
           onSuccess: () => {
             setRegistrationStatus('success');
           },
@@ -63,12 +62,7 @@ function Form({ weather, defaultDeposit, isAdmin, setRegistrationStatus }: Props
     }
 
     if (isAdmin && meta) {
-      sendMessage(
-        { StartGame: { fuel_amount: fuel, payload_amount: payload } },
-        {
-          value: deposit,
-        },
-      );
+      sendMessage({ StartGame: { fuel_amount: fuel, payload_amount: payload } });
     }
   };
 
