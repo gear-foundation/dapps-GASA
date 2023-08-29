@@ -16,16 +16,15 @@ function Home() {
   const { sessionId, altitude, weather, fuelPrice, reward } = session || {};
 
   const isUserAdmin = admin === account?.decodedAddress;
-  const doesSessionExist = !!isSessionEnded;
   const isStateComing = !!state;
-
+  console.log(state);
   return (
     <>
-      {!isContractAddressInitialized && (
+      {(!isContractAddressInitialized || (!Number(sessionId) && isSessionEnded)) && (
         <Welcome>
           {account ? (
             <EnterContractAddress
-              doesSessionExist={doesSessionExist}
+              doesSessionExist={!isSessionEnded}
               isUserAdmin={isUserAdmin}
               isStateComing={isStateComing}
             />

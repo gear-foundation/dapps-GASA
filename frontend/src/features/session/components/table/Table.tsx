@@ -21,7 +21,7 @@ function Table({ data, userId }: Props) {
     ));
 
   const getBody = () =>
-    data.map(({ participant, deadRound, fuelLeft, lastAltitude, payload, halt }, index) => (
+    data?.map(({ participant, deadRound, fuelLeft, lastAltitude, payload, halt }, index) => (
       <Fragment key={participant}>
         <div
           className={cx(styles.bodyCell, styles.firstColumn)}

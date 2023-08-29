@@ -39,7 +39,7 @@ function Start({ participants, session, isUserAdmin, userAddress }: Props) {
   const setCurrentContractAddress = useSetAtom(CURRENT_CONTRACT_ADDRESS_ATOM);
   const setIsContractAddressInitialized = useSetAtom(IS_CONTRACT_ADDRESS_INITIALIZED_ATOM);
   const { altitude, weather, fuelPrice, reward, sessionId } = session;
-  const playersCount = participants?.length ? participants.length : 1;
+  const playersCount = participants?.length ? participants.length + 1 : 1;
   const isRegistered = decodedAddress ? !!participants.some((participant) => participant[0] === decodedAddress) : false;
 
   const containerClassName = clsx(styles.container, decodedAddress ? styles.smallMargin : styles.largeMargin);
@@ -49,7 +49,6 @@ function Start({ participants, session, isUserAdmin, userAddress }: Props) {
   >('registration');
 
   const meta = useEscrowMetadata();
-
   const getDecodedPayload = (payload: Vec<u8>) => {
     if (meta?.types.handle.output) {
       return meta.createType(meta.types.handle.output, payload).toHuman();
@@ -75,7 +74,7 @@ function Start({ participants, session, isUserAdmin, userAddress }: Props) {
 
     if (isOwner && isEscrowProgram) {
       const reply = getDecodedReply(payload);
-
+      // console.log(reply);
       if (reply?.Err) {
         if (reply.Err === 'NotEnoughParticipants' || reply.Err === 'MaximumPlayersReached') {
           setRegistrationStatus(reply.Err);
@@ -101,7 +100,7 @@ function Start({ participants, session, isUserAdmin, userAddress }: Props) {
   }, [api, decodedAddress, meta]);
 
   useEffect(() => {
-    if (registrationStatus === 'NotEnoughParticipants' && participants.length > 1) {
+    if (registrationStatus === 'NotEnoughParticipants' && participants.length) {
       setRegistrationStatus('registration');
     }
   }, [participants, registrationStatus]);
@@ -140,7 +139,7 @@ function Start({ participants, session, isUserAdmin, userAddress }: Props) {
 
           <footer>
             {isRegistered && !isUserAdmin && <SuccessfullyRegisteredInfo />}
-            {isRegistered &&
+            {!participants.length &&
               isUserAdmin &&
               registrationStatus === 'NotEnoughParticipants' &&
               participants.length < 2 && (
@@ -158,7 +157,8 @@ function Start({ participants, session, isUserAdmin, userAddress }: Props) {
             {!isRegistered && registrationStatus === 'error' && !isUserAdmin && (
               <Warning title="Error" text="Please try again later or choose another contract address." />
             )}
-            {((isUserAdmin && registrationStatus !== 'NotEnoughParticipants') || (!isUserAdmin && !isRegistered && registrationStatus === 'registration')) && (
+            {((isUserAdmin && registrationStatus !== 'NotEnoughParticipants') ||
+              (!isUserAdmin && !isRegistered && registrationStatus === 'registration')) && (
               <Form
                 weather={weather}
                 defaultDeposit={withoutCommas('0')}

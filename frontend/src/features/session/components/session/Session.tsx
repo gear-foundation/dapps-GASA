@@ -33,7 +33,7 @@ function Session({ session, turns, rankings, userId }: Props) {
   const lastPage = () => setRoundIndex(roundsCount - 1);
 
   const getEvents = (): Event[] =>
-    turns[roundIndex].map((participantInfo) => {
+    turns?.[roundIndex]?.map((participantInfo) => {
       const isAlive = Object.keys(participantInfo[1])[0] === 'Alive';
 
       return {
@@ -49,7 +49,7 @@ function Session({ session, turns, rankings, userId }: Props) {
     });
 
   const getFeedItems = () =>
-    getEvents().map(({ participant, halt, payload, lastAltitude, fuelLeft, deadRound }, index) => (
+    getEvents()?.map(({ participant, halt, payload, lastAltitude, fuelLeft, deadRound }, index) => (
       <li key={participant} className={styles.item} style={{ '--color': PLAYER_COLORS[index] } as CSSProperties}>
         <h3 className={styles.heading}>{participant}</h3>
         <div className={styles.bodyItem}>
@@ -120,9 +120,9 @@ function Session({ session, turns, rankings, userId }: Props) {
         currentEvents={getEvents()}
         currentRound={roundIndex}
         roundsCount={roundsCount}
-        isWinner={userId === sortRanks()[0][0]}
-        reward={(rankings.find((rank) => rank[0] === userId) as Rank)[1]}
-        userRank={sortRanks().findIndex((rank) => rank[0] === userId) + 1}
+        isWinner={userId === sortRanks()?.[0]?.[0]}
+        reward={(rankings?.find((rank) => rank[0] === userId) as Rank)?.[1]}
+        userRank={sortRanks()?.findIndex((rank) => rank[0] === userId) || 0 + 1}
       />
     </div>
   );

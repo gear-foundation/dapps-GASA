@@ -15,6 +15,7 @@ type Props = {
 };
 
 function Radar({ currentEvents, currentRound, roundsCount, isWinner, userRank, reward }: Props) {
+  console.log(roundsCount);
   const getPlayers = () =>
     currentEvents?.map(({ participant, deadRound }, index) => {
       const playerNumber = index + 1;
